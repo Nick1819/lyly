@@ -1,0 +1,22 @@
+{
+  "name": "lyly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "config": "^3.3.1",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "helmet": "^3.22.0",
+    "mongoose": "^5.9.7",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.2"
+  }
+}
