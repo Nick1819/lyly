@@ -1,5 +1,5 @@
 const express = require('express');
-const genres = express();
+const genres = express.Router();
 
 
 let movie_genres = [ 
