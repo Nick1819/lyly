@@ -6,4 +6,5 @@ home.get('/', (req, res) => {
     res.end();
 })
 
+
 module.exports = home;
