@@ -12,6 +12,10 @@ const customerSchema = new mongoose.Schema({
         minlength: 5, 
         maxlength: 5
     },
+    number_of_film_in_rent: {
+        type: Number, 
+        required: true
+    },
     Film_in_rent: {
         type: new mongoose.Schema({
             name: {

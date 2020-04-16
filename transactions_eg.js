@@ -2,7 +2,8 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
  
     const usersCollection = client.db("sample_airbnb").collection("users");
     const listingsAndReviewsCollection = client.db("sample_airbnb").collection("listingsAndReviews");
- 
+    // Customer + MovieSchema
+     
     const reservation = createReservationDocument(nameOfListing, reservationDates, reservationDetails);
  
     const session = client.startSession();
