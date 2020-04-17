@@ -1,41 +1,69 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+const JoiComplex = require('joi-password-complexity');
+
+const complexityOptions = {
+    min: 5,
+    max: 250,
+    lowerCase: 1,
+    upperCase: 1,
+    numeric: 3,
+    symbol: 2,
+    requirementCount: 6,
+  };
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String, 
-        maxlength = 50, 
-        minlength = 3, 
+        maxlength : 50, 
+        minlength : 3, 
         required : true
     }, 
+    username: {
+        type: String, 
+        maxlength: 50, 
+        minlength:5,
+        required: true, 
+        unique: true
+    },
     gender: {
         type: String,
         required: true
     },
-    age: { 
-        type: Number, 
-        min: 10, 
-        require: false
+    password: { 
+        type: String, 
+        minlength: 5, 
+        require: true
     }, 
     email: {
         type: String, 
-        required: true
+        required: true,
+        unique: true
     },
     address: { 
         type: String,
         required: true
     },
-    isGold: {
-        type: Boolean, 
-        required: true
-    },
-    film_in_renting: {
-        type: Number
-    } 
 }); 
 
-const UserSchema = mongoose.model('user', userSchema);
+
+function validateUser(user) {
+    const schema = Joi.object ({
+        name: Joi.string().max(255).required(), 
+        gender: Joi.string().required(), 
+        email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net']}}),
+        password: JoiComplex(complexityOptions),
+        address: Joi.string().required(),
+        username: Joi.string().required()
+    })
+    //Joi schema, not normal Schema
+
+    return schema.validate(user);
+}
+
+const User = mongoose.model('users', userSchema);
 
 
-module.exports.UserSchema = UserSchema; 
+module.exports.User = User; 
 module.exports.userSchema = userSchema;
+module.exports.validateUser = validateUser;

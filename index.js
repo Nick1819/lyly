@@ -17,7 +17,9 @@ const lyly = express();
 const genres = require('./routes/genres');
 const home = require('./routes/home-page');
 const movies = require('./routes/movies');
+const login = require('./routes/login');
 const rentals = require('./routes/rentals');
+const register = require('./routes/register');
 const customers = require('./routes/customers');
 const server = http.createServer();
 const mongoose = require('mongoose');
@@ -28,6 +30,11 @@ const url = 'mongodb://localhost:27017/lyly';
 lyly.use(express.json()); 
 lyly_environment = process.env.NODE_ENV; 
 lyly_app_environment = lyly.get('env');
+
+if (!config.get('jwtPrivateKey')) {
+    console.error('Fatal error lyly_jwtPrivateKey'); 
+    process.exit(1);
+}
 
 const debug_API = require('debug')('lyly:api');
 const debug_DB = require('debug')('lyly:db');
@@ -42,8 +49,11 @@ mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(console.log('Connected to the database!'))
     .catch(err => console.error('error occurs', err));
 
+mongoose.set('useCreateIndex', true)
 
 // Routing API 
+lyly.use('/login', login);
+lyly.use('/register', register);
 lyly.use('/genres', genres);
 lyly.use('/rentals', rentals );
 lyly.use('/movies', movies);
