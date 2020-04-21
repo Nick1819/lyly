@@ -18,6 +18,7 @@ require('./startups/logging');
 require('./startups/routes')(lyly);
 require('./startups/db')();
 require('./startups/config')();
+require('./startups/prod')(lyly);
 // Set up environemnt variable and system debugging 
 
 lyly.use(express.json()); 
