@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 function validateLogin(login) {
     const schema = Joi.object ({
-        password: Joi.string().min(10).required().trim(),
+        password: Joi.string().required().trim(),
         username: Joi.string().required().trim()
     });
 

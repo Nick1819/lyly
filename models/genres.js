@@ -34,10 +34,6 @@ const filmSchema = new mongoose.Schema({
         required: true, 
         minlength: 2, 
         maxlength: 50
-    }, 
-    query_id: {
-        type: String, 
-        required: true
     }
 }) 
 

@@ -7,34 +7,22 @@ LICENSED: Me || MIT
 
 */ 
 
+const error = require('./middleware/error');
 
 const express = require('express');
 const morgan = require('morgan');
-const Joi = require('@hapi/joi');
-const config = require('config');
 const http = require('http');
 const lyly = express();
-const genres = require('./routes/genres');
-const home = require('./routes/home-page');
-const movies = require('./routes/movies');
-const login = require('./routes/login');
-const rentals = require('./routes/rentals');
-const register = require('./routes/register');
-const customers = require('./routes/customers');
-const server = http.createServer();
-const mongoose = require('mongoose');
-const url = 'mongodb://localhost:27017/lyly';
 
+require('./startups/logging');
+require('./startups/routes')(lyly);
+require('./startups/db')();
+require('./startups/config')();
 // Set up environemnt variable and system debugging 
 
 lyly.use(express.json()); 
 lyly_environment = process.env.NODE_ENV; 
 lyly_app_environment = lyly.get('env');
-
-if (!config.get('jwtPrivateKey')) {
-    console.error('Fatal error lyly_jwtPrivateKey'); 
-    process.exit(1);
-}
 
 const debug_API = require('debug')('lyly:api');
 const debug_DB = require('debug')('lyly:db');
@@ -43,24 +31,15 @@ if (lyly_environment === 'development') {
     console.log('initialization completed'); 
 }
 
-lyly.listen(8000, () => console.log(`Listening to port 8000...`));
+let server = http.createServer(function(req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('okay');
+});
 
-mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(console.log('Connected to the database!'))
-    .catch(err => console.error('error occurs', err));
+lyly.listen(8000, () => console.log('Listening to port 8000'));
+//lyly.listen(8000, () => console.log(`Listening to port 8000...`));
 
-mongoose.set('useCreateIndex', true)
-
-// Routing API 
-lyly.use('/login', login);
-lyly.use('/register', register);
-lyly.use('/genres', genres);
-lyly.use('/rentals', rentals );
-lyly.use('/movies', movies);
-lyly.use('/customers', customers);
-lyly.use('/', home);
-
-
+lyly.use(error);
 
 
 

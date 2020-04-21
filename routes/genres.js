@@ -1,4 +1,7 @@
 const express = require('express');
+const error_handler = require('../middleware/error_handler');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const genres = express.Router();
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
@@ -20,11 +23,13 @@ async function input_film_genre() {
     }
 } 
 // user gets data to the browser
-genres.get("/get", async (req, res) => { 
+genres.get("/", async(req, res) => { 
+    throw new Error('Could not load genres');
     const list = await FilmGenre
         .find() 
         .select({
-            genre: 1
+            genre: 1,
+            _id: 0,
         })
     res.send(list);
 });
@@ -34,20 +39,16 @@ genres.get("/get", async (req, res) => {
     "genre":
 }
 */
-genres.post("/post", async (req, res) => {
-
+genres.post("/", auth, async (req, res) => {
     temp = new FilmGenre({
         genre: req.body.genre
     });
-    try {
-        result = await temp.save();
-        res.send(result);
-    }
-    catch (err) {
-        console.error('Error occur, cannot post', err);
-        res.send('Error');
-    }
-    
+    const checking = await FilmGenre.find({ genre: req.body.genre }).select({ genre: 1}); 
+    if (checking[0]) return res.send('Genre already exits');
+    const result = await temp.save(); 
+
+    console.log('Done adding...');
+    res.send('Genre added!');
 });
 // user update new data to the database, ITC: update id user
 /* update structure JSON
@@ -55,35 +56,23 @@ genres.post("/post", async (req, res) => {
     "genre" : current genre + "0001"
 }
 */
-genres.put("/put/:id", async (req, res) => {
-    try { 
-        result = await FilmGenre.updateOne({_id: req.params.id}, {
-            $set: {
-                genre: req.body.genre
-            }
-        });
-        console.log('Done updating...');
-        res.send('Done!');
-    }
-    catch (err) {
-        console.error('Cannot put data ... ', err);
-        res.send('Error');
-    }
-    
+genres.put("/:id", auth, async(req, res) => {
+    result = await FilmGenre.updateOne({_id: req.params.id}, {
+        $set: {
+            genre: req.body.genre
+        }
+    });
+
+    console.log('Done updating...');
+    res.send('Done!');
 }); 
 
 // user delete data, ITC: delete id user
-genres.delete("/delete/:id", async (req, res) => {
-    try { 
-        result = await FilmGenre.deleteOne({_id: req.params.id});
-        console.log('Done deleting....');
-        res.send('Done!');
-    }
-    catch (err) {
-        console.error('Cannot delete data ....', err);
-        res.send('Error');
-    }
-    
+genres.delete("/:id",[auth, admin], async(req, res) => {
+    result = await FilmGenre.deleteOne({_id: req.params.id});
+
+    console.log('Done deleting....');
+    res.send('Done!');
 });
 
 module.exports = genres;
